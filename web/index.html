@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>主页</title>
+
+    <style>
+        * {
+            margin: 0px;
+            padding: 0px;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: url("img/indexBackGround.jpg") no-repeat center;
+        }
+
+        .lg_layout {
+            width: 700px;
+            height: 330px;
+            border: 8px solid #EEEEEE;
+            background: white;
+            /*让div水平居中*/
+            margin: auto;
+            margin-top: 180px;
+        }
+
+        .lg_left {
+            float: left;
+            margin: 15px;
+        }
+
+        .lg_left > p:first-child {
+            color: #FFD026;
+            font-size: 20px;
+        }
+
+        .lg_left > p:last-child {
+            color: #A6A6A6;
+            font-size: 20px;
+        }
+
+        .lg_center {
+            float: left;
+            width: 330px;
+            margin-top: 120px;
+            font-size: 25px;
+            color: #1b6d85;
+        }
+
+        .lg_center p a {
+            color: #2e6da4;
+        }
+
+        .lg_right {
+            float: right;
+            margin-top: 15px;
+            margin-right: 10px;
+            margin-bottom: 50px;
+        }
+
+        .lg_right > p:first-child {
+            font-size: 15px;
+        }
+
+        .lg_right p a {
+             color: pink;
+         }
+
+
+        .td_left {
+            width: 60px;
+            text-align: right;
+            height: 45px;
+        }
+
+        .td_right {
+            padding-left: 15px;
+        }
+
+        #username, #password, #checkcode {
+            width: 251px;
+            height: 32px;
+            border: 1px solid #A6A6A6;
+            /*设置边框圆角*/
+            border-radius: 5px;
+            padding-left: 10px;
+        }
+
+        #checkcode {
+            width: 110px;
+        }
+
+        #img_check {
+            vertical-align: middle;
+        }
+
+        #btn_sub {
+            width: 150px;
+            height: 40px;
+            background: #FFD026;
+            border: 1px solid;
+            margin-top: 15px;
+        }
+
+    </style>
+
+</head>
+<body>
+<div class="lg_layout">
+    <div class="lg_left">
+        <p>引导页面</p>
+        <p>Guide page</p>
+    </div>
+
+    <div class="lg_center">
+        <div>
+            <p>🔐 员工登录：<a href="user_login.html">立即登录</a></p> </br>
+            <p>⌨ 员工注册：<a href="user_register.html">立即注册</a></p>
+        </div>
+
+    </div>
+    <div class="lg_right">
+        <p>管理员登录:<a href="admin_login.html">立即登录</a></p>
+    </div>
+    <div>
+        <img src="img/QRcode258.jpg" width="170" height="170">
+    </div>
+</div>
+
+
+</body>
+</html>

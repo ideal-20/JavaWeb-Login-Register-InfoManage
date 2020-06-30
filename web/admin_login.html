@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>管理员登录</title>
+
+  <!-- 导入CSS的全局样式 -->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+
+  <!--引入表单校验插件CSS类库-->
+  <link href="css/bootstrapValidator.min.css" rel="stylesheet"/>
+
+  <style>
+    body {
+      background: url("img/adminLogin.jpg") no-repeat center;
+    }
+  </style>
+
+</head>
+<body>
+<div class="container" style="width: 330px; margin-top: 130px">
+  <h3 style="text-align: center;">管理员登录</h3>
+  <form id="loginForm" action="user" method="post">
+
+    <div class="form-group">
+      <label for="username">用户名：</label>
+      <input type="text" name="username" class="form-control" id="username" placeholder="请输入用户名"/>
+    </div>
+
+    <div class="form-group">
+      <label for="password">密码：</label>
+      <input type="password" name="password" class="form-control" id="password" placeholder="请输入密码"/>
+    </div>
+
+    <div class="form-inline">
+      <label for="verifycode">验证码：</label>
+      <input type="text" name="verifycode" class="form-control" id="verifycode" placeholder="请输入验证码"
+             style="width: 120px;"/>
+      <img src="checkCode" title="看不清点击刷新" onclick="refreshCode(this)">
+      <script type="text/javascript">
+          //图片点击事件
+          function refreshCode(img) {
+              img.src = "checkCode?" + new Date().getTime();
+          }
+      </script>
+    </div>
+    <hr/>
+    <div class="form-group" style="text-align: center;">
+      <button class="btn btn-lg btn-primary btn-block" type="submit" value="注册">管理员登录</button>
+    </div>
+  </form>
+
+  <!-- 出错显示的信息框 -->
+  <div class="alert alert-warning alert-dismissible" role="alert">
+    <button type="button" class="close" data-dismiss="alert">
+      <span>&times;</span>
+    </button>
+    <strong id="errorMsg">登录校验信息回显框</strong>
+  </div>
+</div>
+
+<!-- jQuery导入,为兼容低版本浏览器我们选择1.x.x版本 -->
+<script src="js/jquery-2.1.0.min.js"></script>
+<!-- 导入bootstrap的js文件 -->
+<script src="js/bootstrap.min.js"></script>
+
+<!--引入表单校验插件-->
+<script src="js/bootstrapValidator.min.js"></script>
+<script src="js/zh_CN.js"></script>
+
+<script type="text/javascript">
+    $(function () {
+        $('form').bootstrapValidator({
+            message: 'This value is not valid',
+            feedbackIcons: {
+                valid: 'glyphicon glyphicon-ok',
+                invalid: 'glyphicon glyphicon-remove',
+                validating: 'glyphicon glyphicon-refresh'
+            },
+            fields: {
+                username: {
+                    message: '用户名验证失败',
+                    validators: {
+                        notEmpty: {
+                            message: '用户名不能为空'
+                        },
+                        stringLength: {
+                            min: 5,
+                            max: 18,
+                            message: '用户名长度必须在6到18位之间'
+                        },
+                        regexp: {
+                            regexp: /^[a-zA-Z0-9_]+$/,
+                            message: '用户名只能包含大写、小写、数字和下划线'
+                        }
+                    }
+                },
+                password: {
+                    message: '密码无效',
+                    validators: {
+                        notEmpty: {
+                            message: '密码不能为空'
+                        },
+                        stringLength: {
+                            min: 6,
+                            max: 30,
+                            message: '密码长度必须在6到30之间'
+                        },
+                        different: {//不能和用户名相同
+                            field: 'username',
+                            message: '不能和用户名相同'
+                        },
+                        regexp: {//匹配规则
+                            regexp: /^[a-zA-Z0-9_\.]+$/,
+                            message: 'The username can only consist of alphabetical, number, dot and underscore'
+                        }
+                    }
+                }
+            }
+        })
+            .on('success.form.bv', function (e) {//点击提交之后
+                e.preventDefault();
+                $.post("/admin/login", $("#loginForm").serialize(), function (data) {
+                    //处理服务器响应的数据  data  {flag:true,errorMsg:"注册失败"}
+                    if (data.flag) {
+                        location.href = "admin_list_userInfo.html";
+                    } else {
+                        $("#errorMsg").html(data.errorMsg);
+                    }
+                });
+            });
+    });
+
+</script>
+
+</body>
+</html>

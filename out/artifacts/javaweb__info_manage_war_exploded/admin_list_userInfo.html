@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<!-- 网页使用的语言 -->
+<html lang="zh-CN">
+<head>
+  <!-- 指定字符集 -->
+  <meta charset="utf-8">
+  <!-- 使用Edge最新的浏览器的渲染方式 -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <!-- viewport视口：网页可以根据设置的宽度自动进行适配，在浏览器的内部虚拟一个容器，容器的宽度与设备的宽度相同。
+  width: 默认宽度与设备的宽度相同
+  initial-scale: 初始的缩放比，为1:1 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+  <title>用户信息管理系统</title>
+
+  <!-- 导入CSS的全局样式 -->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+
+  <style type="text/css">
+
+    td, th {
+      text-align: center;
+    }
+
+    /*body {*/
+    /*background: url("img/userInfoList.jpg") center;;*/
+    /*}*/
+  </style>
+
+</head>
+<body>
+
+
+<div class="container">
+  <h2 class="text-info" style="text-align: center">
+    <i class="bookmark icon"></i>
+    员工用户信息列表</h2>
+  <br/>
+
+  <div style="float: left;">
+    <form id="complexQuery" class="form-inline">
+      <div class="form-group">
+        <label for="InputUsername">Username</label>
+        <input type="text" name="username" class="form-control" id="InputUsername">
+      </div>
+      <div class="form-group">
+        <label for="InputEmail">Email</label>
+        <input type="email" name="email" class="form-control" id="InputEmail">
+      </div>
+      <button type="submit" class="btn btn-default" id="cQuery">查询</button>
+    </form>
+  </div>
+
+  <div style="float: right;margin: 5px;">
+    <button id="update-department-btn" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+      部门信息维护
+    </button>
+    <a id="findAll" class="btn btn-primary" href="javaScript:findAll()">单页显示</a>
+    <!--<a class="btn btn-primary" id="select_deleteBtn">删除选中</a>-->
+    <button type="submit" class="btn btn-danger" id="selected_deleteBtn">删除选中</button>
+  </div>
+
+  <!-- 模态框（Modal） -->
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+            &times;
+          </button>
+          <h4 class="modal-title" id="myModalLabel">
+            部门信息维护
+          </h4>
+        </div>
+        <div class="modal-body">
+          <table border="1" class="table table-bordered table-hover" id="department_table">
+            <tr class="info">
+              <th>部门编号</th>
+              <th>部门名称</th>
+              <th>操作</th>
+            </tr>
+          </table>
+
+          <form role="form">
+            <div class="form-group">
+              <input id="input-department" type="text" class="form-control" placeholder="请输入新增部门名称">
+              <br>
+              <div style="text-align: center">
+                <button id="add-department" type="button" class="btn btn-primary">
+                  新增部门
+                </button>
+              </div>
+            </div>
+          </form>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+          </button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+  </div>
+
+  <table border="1" class="table table-bordered table-hover" id="userInfo_table">
+    <tr class="info">
+      <th><input type="checkbox" name="checkAll" id="checkAll"/></th>
+      <th>编号</th>
+      <th>姓名</th>
+      <th>邮箱</th>
+      <th>电话</th>
+      <th>性别</th>
+      <th>生日</th>
+      <th>学历信息</th>
+      <th>家庭信息</th>
+      <th>待遇信息</th>
+      <th>部门信息</th>
+      <th>操作</th>
+    </tr>
+
+  </table>
+  <nav aria-label="Page navigation">
+    <ul id="pageNum" class="pagination">
+      <!--<li><a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>-->
+
+      <!--<li><a href="#">1</a></li>-->
+      <!--<li><a href="#">2</a></li>-->
+      <!--<li><a href="#">3</a></li>-->
+      <!--<li><a href="#">4</a></li>-->
+      <!--<li><a href="#">5</a></li>-->
+
+      <!--<li><a href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>-->
+
+      <!--<span id="pageCount" style="font-size: 25px;margin-left: 5px;">共-条记录，共-页</span>-->
+    </ul>
+  </nav>
+</div>
+
+</div>
+<!-- jQuery导入，建议使用1.9以上的版本 -->
+<script src="js/jquery-2.1.0.min.js"></script>
+<!-- 导入bootstrap的js文件 -->
+<script src="js/bootstrap.min.js"></script>
+
+<script src="js/getParameter.js"></script>
+
+
+<script>
+
+    $(function () {
+        var currentPage = 1;
+        var pageSize = 8;
+
+        load(currentPage, pageSize);
+
+    });
+
+    function load(currentPage, pageSize) {
+
+        // $.param({'name1':value1,'name2':value2})+'&'+$('form').serialize()
+        var uname = getParameter("username");
+        var uemail = getParameter("email");
+
+        if (uemail) {
+            uemail = window.decodeURIComponent(uemail);
+        }
+        if (uname) {
+            uname = window.decodeURIComponent(uname);
+        }
+
+        $("#InputUsername").val(uname);
+        $("#InputEmail").val(uemail);
+
+        $.get("/route/routeQuery", $.param({
+            currentPage: currentPage,
+            pageSize: pageSize
+        }) + '&' + $('#complexQuery').serialize(), function (data) {
+
+            // alert(data);
+
+            var lis = " ";
+
+            //点击首页代码
+            var firstPage = '<li><a href="javascript:load(1,8)">首页</a></li>';
+
+            //计算上一页的页码
+            var previousNum = data.currentPage - 1;
+            if (previousNum <= 0) {
+                previousNum = 1;
+            }
+
+            //上一页翻页的具体代码
+            var previousPage = '<li class="threeword"><a href="javascript:load(' + previousNum + ',8)">&laquo;</a></li>';
+
+            lis += firstPage;
+            lis += previousPage;
+
+
+            /*
+                一共展示8个页码，前4后3
+                如果前面不够4个，后面补齐8个
+                如果后面不足8个，前面补齐8个
+             */
+
+            var start;
+            var end;
+
+            //总页码超过8页
+            if (data.totalPage < 8) {
+                start = 1;
+                end = data.totalPage;
+            } else {
+                //总页码超过8页
+                start = data.currentPage - 4;
+                end = data.currentPage + 3;
+
+                //如果前面不够4个
+                if (start < 1) {
+                    start = 1;
+                    end = start + 7;
+                }
+
+                //如果后面不足3个，前面补齐8个
+                if (end > data.totalPage) {
+                    end = data.totalPage;
+                    start = end - 7;
+                }
+            }
+
+            for (var i = start; i <= end; i++) {
+                if (data.currentPage == i) {
+                    var li = '<li class="active"><a href="javascript:load(' + i + ',8)">' + i + '</a></li>';
+                } else {
+                    var li = '<li><a href="javascript:load(' + i + ',8)">' + i + '</a></li>';
+                }
+                lis += li;
+            }
+
+            var lastPage = '<li class="threeword"><a href="javascript:load(' + data.totalPage + ',8)">末页</a></li>';
+
+            //计算下一页的页码
+            var nextNum = data.currentPage + 1;
+            if (nextNum >= data.totalPage) {
+                nextNum = data.totalPage;
+            }
+
+            var nextPage = '<li class="threeword"><a href="javascript:load(' + nextNum + ',8)">&raquo;</a></li>';
+
+            lis += nextPage;
+            lis += lastPage;
+
+            var pageCount = '<span id="pageCount" style="font-size: 25px;margin-left: 5px;"></span>';
+
+            lis += pageCount;
+
+            $("#pageNum").html(lis);
+
+            //返回顶部
+            window.scrollTo(0, 0);
+
+            $("#pageCount").html("共" + data.totalCount + "条记录，共" + data.totalPage + "页");
+
+            $('#userInfo_table tr:gt(0)').remove();
+            var s = '';
+            for (var i = 0; i < data.list.length; i++) {
+                s += '<tr><td>' + '<input type="checkbox" name="checkItem" />' + '</td><td>'
+                    + data.list[i].uid + '</td><td>' + data.list[i].name + '</td><td>'
+                    + data.list[i].email + '</td><td>' + data.list[i].telephone + '</td><td>'
+                    + data.list[i].gender + '</td><td>' + data.list[i].birthday + '</td><td>'
+                    + data.list[i].education + '</td><td>' + data.list[i].family + '</td><td>'
+                    + data.list[i].treatment + '</td><td>' + data.list[i].department + '</td><td>'
+                    + '<button type="submit" class="btn btn-primary" id="updateBtn">修改</button>' + '&nbsp' + '<button type="submit" class="btn btn-danger" id="deleteBtn" ">删除</button>' + '</td>';
+            }
+            $('#userInfo_table').append(s);
+        })
+    }
+
+    function findAll() {
+        $.get("/user/userList", {}, function (data) {
+            $('#userInfo_table tr:gt(0)').remove();
+            var s = '';
+            for (var i = 0; i < data.length; i++) {
+                s += '<tr><td>' + '<input type="checkbox" name="checkItem" />' + '</td><td>'
+                    + data[i].uid + '</td><td>' + data[i].name + '</td><td>'
+                    + data[i].email + '</td><td>' + data[i].telephone + '</td><td>'
+                    + data[i].gender + '</td><td>' + data[i].birthday + '</td><td>'
+                    + data[i].education + '</td><td>' + data[i].family + '</td><td>'
+                    + data[i].treatment + '</td><td>' + data[i].department + '</td><td>'
+                    + '<button type="submit" class="btn btn-primary" id="updateBtn">修改</button>' + '&nbsp' + '<button type="submit" class="btn btn-danger" id="deleteBtn" ">删除</button>' + '</td>';
+            }
+            $('#userInfo_table').append(s);
+        })
+    }
+
+
+    $("#cQuery").click(function () {
+        var username = $("#InputUsername").val();
+        var email = $("#InputEmail").val();
+        location.href = "/admin_list_userInfo.html?username=" + username + "&email=" + email;
+
+    });
+
+
+    $("#userInfo_table").on("click", "#deleteBtn", function () {
+
+        if (confirm("您确定要删除吗？")) {
+            var uid = $(this).closest("tr").find("td:eq(1)").text();
+            $.get("/user/deleteUser", {uid: uid}, function (data) {
+                if (data.flag) {
+                    alert("删除成功");
+                } else {
+                    alert("删除失败");
+                }
+            })
+        }
+
+    });
+
+    $("#selected_deleteBtn").click(function () {
+        if (confirm("您确定要删除所选中的用户信息吗？")) {
+            var cbs = $("input[type=checkbox]:checked");
+            if (cbs.length == 0) {
+                alert("未选中任何项");
+                return;
+            }
+            var cbArray = [];
+            // cbs.each(function () {
+            //     cbArray.push($(this).val());
+            //     alert($(this).val());
+            // })
+
+            for (var i = 0; i < cbs.length; i++) {
+                var cb = cbs[i];
+                var uid = $(cb).closest("tr").find("td:eq(1)").text();
+                cbArray.push(uid);
+            }
+
+            var uids = cbArray.toString();
+
+            $.get("/user/deleteSelectedUser", {uids: uids}, function (data) {
+                if (data.flag) {
+                    alert("删除成功");
+                } else {
+                    alert("删除失败");
+                }
+            })
+        }
+
+
+    });
+
+    $("#checkAll").bind("click", function () {
+        $("input[type=checkbox]").prop("checked", this.checked);
+
+    });
+
+    // 更新操作
+    $("#userInfo_table").on("click", "#updateBtn", function () {
+        var uid = $(this).closest("tr").find("td:eq(1)").text();
+        $(location).attr('href', 'admin_update_userInfo.html?uid=' + uid);
+    });
+
+
+    // 部门信息查询
+    $("#update-department-btn").click(function () {
+
+        $.get("/department/departmentList", {}, function (data) {
+            $('#department_table tr:gt(0)').remove();
+            var s = '';
+            for (var i = 0; i < data.length; i++) {
+                s += '<tr><td>'
+                    + data[i].did + '</td><td>' + data[i].department + '</td><td>'
+                    + '&nbsp' + '<button type="submit" class="btn btn-danger" id="delete-department" ">删除</button>' + '</td></tr>';
+            }
+            $('#department_table').append(s);
+        });
+    });
+
+    //新增部门
+    $("#add-department").click(function () {
+        var department = $("#input-department").val();
+        $.get("/department/addDepartment", {'department': department}, function (data) {
+            if (data.flag) {
+                alert("添加成功");
+            } else {
+                alert("添加失败");
+            }
+        });
+    });
+
+
+    //删除部门
+    $("#department_table").on("click", "#delete-department", function () {
+
+        if (confirm("您确定要删除吗？")) {
+            var did = $(this).closest("tr").find("td:eq(0)").text();
+
+            $.get("/department/deleteDepartment", {'did': did}, function (data) {
+                if (data.flag) {
+                    alert("删除成功");
+                } else {
+                    alert("删除失败");
+                }
+            })
+        }
+
+    });
+
+
+</script>
+
+</body>
+</html>
