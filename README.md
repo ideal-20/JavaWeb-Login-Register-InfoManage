@@ -31,7 +31,21 @@
   
 ## 效果展示
 
-待更新......
+![](https://github.com/ideal-20/JavaWeb-Login-Register-InfoManage/blob/master/img/1.png)
+
+![](https://github.com/ideal-20/JavaWeb-Login-Register-InfoManage/blob/master/img/2.png)
+
+![](https://github.com/ideal-20/JavaWeb-Login-Register-InfoManage/blob/master/img/3.png)
+
+![](https://github.com/ideal-20/JavaWeb-Login-Register-InfoManage/blob/master/img/4.png)
+
+![](https://github.com/ideal-20/JavaWeb-Login-Register-InfoManage/blob/master/img/5.png)
+
+![](https://github.com/ideal-20/JavaWeb-Login-Register-InfoManage/blob/master/img/6.png)
+
+![](https://github.com/ideal-20/JavaWeb-Login-Register-InfoManage/blob/master/img/7.png)
+
+![](https://github.com/ideal-20/JavaWeb-Login-Register-InfoManage/blob/master/img/8.png)
 
 
 ## 结尾
